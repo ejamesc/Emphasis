@@ -68,6 +68,7 @@ var Emphasis = {
     /*  Inject the minimum styles rules required */
         var st = document.createElement('style');
         st.innerHTML = 'p.' + this.classActive + ' span { background-color:#f2f4f5; } p span.' + this.classHighlight + ' { background-color:#fff0b3; } span.' + this.classInfo + ' { position:absolute; margin:-1px 0px 0px -8px; padding:0; font-size:10px; background-color: transparent !important} span.' + this.classInfo + ' a { text-decoration: none; } a.' + this.classActiveAnchor + ' { color: #000; font-size: 11px; }';
+        console.log(st.innerHTML);
         document.getElementsByTagName("head")[0].appendChild(st);
     },
 
@@ -80,6 +81,7 @@ var Emphasis = {
         /*  Version 1 Legacy support
             #p20h4s2,6,10,h6s5,1 -> p = 20, h = [ 4, 6 ], s = { "4": [ 2, 6, 10 ] , "6": [ 5, 1 ] }
         */
+        console.log(h);
             var a, re = /[ph][0-9]+|s[0-9,]+|[0-9]/g;
             if (lh) {
                 while ((a = re.exec(lh)) !== null) {
@@ -98,6 +100,7 @@ var Emphasis = {
                     }
                 }
             }
+            console.log(h);
         } else {
         /*  Version 2
             #h[tbsaoa,Sstaoo,2,4],p[FWaadw] -> p = "FWaadw", h = [ "tbsaoa", "Sstaoo" ], s = { "Sstaoo" : [ 2, 4 ] }
@@ -145,7 +148,6 @@ var Emphasis = {
             self.vu = (self.vu) ? false : true;
             self.paragraphInfo(self.vu);
         }
-        console.log('keydown');
         setTimeout(function(){ self.kh = '|'; }, 500);
     },
 
@@ -168,7 +170,7 @@ var Emphasis = {
                 pr.setAttribute("data-num", c); // Order
                 //Event.observe(pr, 'click', function(e) { instance.paragraphClick(e); }); 
                 // Prefer not doing this for each Paragraph but seems necessary
-                $(instance).click(function(e) { instance.paragraphClick(e);});
+                $('p').click(function(e) { instance.paragraphClick(e);});
                 c++;
             }
         }
@@ -180,7 +182,7 @@ var Emphasis = {
     paragraphClick: function(e) {
     /*  Clicking a Paragrsph has consequences for Highlighting, selecting and changing active Anchor */
         if (!this.vu) { return; }
-
+        console.log('success');
         var hasChanged = false;
         var pr = (e.currentTarget.nodeName=="P") ? e.currentTarget : false; // Paragraph
         var sp = (e.target.nodeName=="SPAN")     ? e.target        : false; // Span
@@ -188,7 +190,7 @@ var Emphasis = {
 
         if (an) {
         /*  Click an Anchor link */
-            if (!an.hasClassName(this.classActiveAnchor)) {
+            if (!$('a').hasClass(this.classActiveAnchor)) {
                 this.updateAnchor(an);
                 hasChanged = true;
                 e.preventDefault();
@@ -200,19 +202,21 @@ var Emphasis = {
             return;
         }
 
-        if (pr.hasClassName(this.classReady)) {
-            if (!pr.hasClassName(this.classActive) && (sp && !sp.hasClassName(this.classHighlight))) {
+        if (pr.ClassName == this.classReady) {
+            console.log('prjavascriptscss');
+            if ((!pr.className == this.classActive) && (sp && !sp.className == this.classHighlight)) {
             //  If not current Active p tag, clear any others out there and make this the Active p tag
                 this.removeAllClasses("p", this.classActive);
-                pr.addClassName(this.classActive); // Mark as Active
+                $('p').addClass(this.classActive); // Mark as Active
+                console.log('success');
             } else {
-                if (!pr.hasClassName(this.classActive)) {
+                if (!pr.className==this.classActive) {
                     this.removeAllClasses("p", this.classActive);
-                    pr.addClassName(this.classActive); // Mark as Active
+                    pr.className+=this.classActive; // Mark as Active
                 }
 
                 if (sp) {
-                    sp.toggleClassName(this.classHighlight);
+                    $('span').toggleClass(this.classHighlight);
                     hasChanged = true;
                 }
             }
@@ -233,8 +237,8 @@ var Emphasis = {
             pr.setAttribute('data-sentences', jLen);
 
             this.removeAllClasses("p", this.classActive);
-            pr.addClassName(this.classActive); // Mark as Active
-            pr.addClassName(this.classReady);  // Mark as Ready
+            pr.className=this.classActive; // Mark as Active
+            pr.className=this.classReady;  // Mark as Ready
             hasChanged = true;
         }
 
@@ -280,10 +284,10 @@ var Emphasis = {
 
         for (var p=0; p<pLen; p++) {
             var key = paras[p].getAttribute("data-key");
-            if (paras[p].hasClassName(this.classHighlight)) {
+            if (paras[p].className==this.classHighlight) {
                 h += "," + key; // Highlight full paragraph
             } else {
-                var spans = paras[p].select('span.' + this.classHighlight);
+                var spans = paras[p].select('span.' + this.classHighlight); //select is a problem
                 var sLen  = spans.length;
                 var nSent = paras[p].getAttribute("data-sentences");
 
@@ -367,10 +371,13 @@ var Emphasis = {
     goHighlight: function(h, s) {
     /*  Highlight a Paragraph, or specific Sentences within it */
         if (!h) return;
+        console.log('yay');
         var hLen = h.length;
+                console.log(hLen);
 
         for (var i=0; i<hLen; i++) {
             var para = this.paragraphList().list[h[i]-1] || false;
+            console.log(para);
             if (para) {
                 var sntns = s[h[i].toString()] || false;
                 var multi = !sntns || sntns.length==0; // Individual sentences, or whole paragraphy?
@@ -382,7 +389,7 @@ var Emphasis = {
                     var k = (multi) ? j : sntns[j]-1;
                     lines[j] = "<span data-num='" + (j+1) + "'>" + lines[j] + "</span>";
                 }
-
+                
             /*  Second pass, update span to Highlight selected lines */
                 for (var j=0; j<jLen; j++) {
                     var k    = (multi) ? j : sntns[j]-1;
@@ -478,7 +485,7 @@ var Emphasis = {
     removeAllClasses: function(tag, klass) {
     /*  Remove classes */
         if (!klass || !tag) return;
-        var els = $$((tag + "." + klass));
+        var els = $((tag + "." + klass));
         for (var i=0; i<els.length; i++){
             els[i].removeClassName(klass);
         }
