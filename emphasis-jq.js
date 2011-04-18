@@ -59,8 +59,7 @@ var Emphasis = {
     config: function() {
     /*
         Eligible Paragraphs
-        This uses some common markup for plain and simpel paragraphs - those that are not empty, no classes.
-        We use PrototypeJS for its css selector awesomeness, but your needs might be simpler (getElementsByTagName('p') etc.)
+        This uses some common markup for plain and simple paragraphs - those that are not empty, no classes.
     */
         this.paraSelctors      = $("#text p");
 
@@ -75,8 +74,6 @@ var Emphasis = {
 
     addCSS: function() {
     /*  Inject the minimum styles rules required */
-    // This takes the document, creates style, defines 
-    // those styles, and then injects it in head @Eli
         var st = document.createElement('style');
         st.innerHTML = 'p.' + this.classActive + ' span { background-color:#f2f4f5; } p span.' + this.classHighlight + ' { background-color:#fff0b3; } span.' + this.classInfo + ' { position:absolute; margin:-1px 0px 0px -8px; padding:0; font-size:10px; background-color: transparent !important} span.' + this.classInfo + ' a { text-decoration: none; } a.' + this.classActiveAnchor + ' { color: #000; font-size: 11px; }';
         document.getElementsByTagName("head")[0].appendChild(st);
@@ -84,7 +81,6 @@ var Emphasis = {
 
     readHash: function() {
     /*  Read and interpret the URL hash */
-    // This is normal regex reading bla bla. Can copy wholesale
         var lh = decodeURI(location.hash);
         var p  = false, h = [], s = {};
 
@@ -142,9 +138,8 @@ var Emphasis = {
                 }
             }
         }
-
         this.p = p; this.h = h; this.s = s;
-
+        
         this.goAnchor(p);
         this.goHighlight(h, s);
     },
@@ -291,7 +286,7 @@ var Emphasis = {
     updateURLHash: function() {
     /*  Scan the Paragraphs, note selections, highlights and update the URL with the new Hash */
         var h     = "h[";
-        var paras = $$('p.emReady');
+        var paras = $('p.emReady');
         var pLen  = paras.length;
 
         for (var p=0; p<pLen; p++) {
@@ -367,13 +362,17 @@ var Emphasis = {
     goAnchor: function(p) {
     /*  Move view to top of a given Paragraph */
         if (!p) return;
+        var pg = (isNaN(p)) ? this.findKey(p)['elm'] : (this.paragraphList().list[p-1] || false);
         var instance = this;
-        setTimeout(function(){
-            //pg.scrollTo(); //Prototype dependency
-            $(document).scrollTop(
-                $('.pnt').offset().top - $(document).offset().top
-            );
-        }, 500);
+        if (pg) {
+            p = '"' + p + '"';
+            var datakey = "'p[data-key$=" + p + "]'";
+            console.log(datakey);
+            $(document).scrollTop($(datakey).offset().top);
+            //setTimeout(function(){
+                //pg.scrollTo(); //Prototype dependency
+            //}, 500);
+        }
     },
 
     goHighlight: function(h, s) {
