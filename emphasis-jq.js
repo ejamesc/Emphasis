@@ -45,14 +45,6 @@ var Emphasis = {
 
         this.addCSS();
         this.readHash();
-        console.log('yay');
-        /*$(document).keydown(function(e) {
-               if(e.keyCode == 13){
-                   console.log('success');
-                   Emphasis.keydown;
-               }
-        });*/
-        console.log('boo');
         //Event.observe(window, 'keydown', this.keydown);
     },
 
@@ -153,6 +145,7 @@ var Emphasis = {
             self.vu = (self.vu) ? false : true;
             self.paragraphInfo(self.vu);
         }
+        console.log('keydown');
         setTimeout(function(){ self.kh = '|'; }, 500);
     },
 
@@ -267,11 +260,7 @@ var Emphasis = {
                 }
             }
         } else {
-            var spans = $('span.' + this.classInfo);
-            var len = spans.length;
-            for (var i=0; i<len; i++) {
-                spans[i].remove();
-            }
+            $('span.' + this.classInfo).remove(); //jQuery dependency
             this.removeAllClasses(this.classActive);
         }
     },
