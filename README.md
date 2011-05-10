@@ -1,6 +1,7 @@
 #Emphasis#
 
-This is my fork of the NYTimes.com's Emphasis library. Everything up to commit (SHA: 70b2073799d9970d217f) is a clean jQuery port of the original, Prototype-dependent script. Commits after that are modifications for use with the Pandamian code base.
+This is my fork of the NYTimes.com's Emphasis library. Everything up to commit (SHA: 70b2073799d9970d217f4c9b7cf76ee4451f6ed8
+) is a clean jQuery port of the original, Prototype-dependent script. Commits after that are modifications for use with the Pandamian code base.
 
 
 ##Original Notes##
