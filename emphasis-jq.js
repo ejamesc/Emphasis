@@ -76,31 +76,29 @@ var Emphasis = {
     /*  Read and interpret the URL hash */
         var lh = decodeURI(location.hash);
         var p  = false, h = [], s = {};
-
+        
         if (lh.indexOf('[')<0 && lh.indexOf(']')<0) {
         /*  Version 1 Legacy support
             #p20h4s2,6,10,h6s5,1 -> p = 20, h = [ 4, 6 ], s = { "4": [ 2, 6, 10 ] , "6": [ 5, 1 ] }
         */
-        console.log(h);
-            var a, re = /[ph][0-9]+|s[0-9,]+|[0-9]/g;
+            re = /[ph][0-9]+|s[0-9,]+|[0-9]/g;
             if (lh) {
                 while ((a = re.exec(lh)) !== null) {
-                    var f = a[0].substring(0, 1);
-                    var r = a[0].substring(1);
-                    if (f == 'p') {
-                        p = parseInt(r);
-                    } else if (f == 'h') {
-                        h.push(parseInt(r));
+                    f = a[0].substring(0, 1);
+                    r = a[0].substring(1);
+                    if (f === 'p') {
+                        p = parseInt(r, 10);
+                    } else if (f === 'h') {
+                        h.push(parseInt(r, 10));
                     } else {
                         a = r.split(',');
-                        for (var i = 0; i < a.length; i++) {
-                            a[i] = parseInt(a[i]);
+                        for (i = 0; i < a.length; i++) {
+                            a[i] = parseInt(a[i], 10);
                         }
                         s[h[h.length - 1]] = a;
                     }
                 }
             }
-            console.log(h);
         } else {
         /*  Version 2
             #h[tbsaoa,Sstaoo,2,4],p[FWaadw] -> p = "FWaadw", h = [ "tbsaoa", "Sstaoo" ], s = { "Sstaoo" : [ 2, 4 ] }
@@ -188,6 +186,8 @@ var Emphasis = {
         var sp = (e.target.nodeName=="SPAN")     ? e.target        : false; // Span
         var an = (e.target.nodeName=="A")        ? e.target        : false; // Anchor
 
+        var $pr = $(pr);
+        
         if (an) {
         /*  Click an Anchor link */
             if (!$('a').hasClass(this.classActiveAnchor)) {
@@ -198,25 +198,23 @@ var Emphasis = {
         }
 
         if (!pr && !sp) {
-            this.removeAllClasses("p", this.classActive);
+            this.removeClass(this.classActive);
             return;
         }
 
-        if (pr.ClassName == this.classReady) {
-            console.log('prjavascriptscss');
-            if ((!pr.className == this.classActive) && (sp && !sp.className == this.classHighlight)) {
+        if ($pr.hasClass(this.classReady)) {
+            if (!$pr.hasClass(this.classActive) && (sp && !$(sp).hasClass(this.classHighlight))) {
             //  If not current Active p tag, clear any others out there and make this the Active p tag
-                this.removeAllClasses("p", this.classActive);
-                $('p').addClass(this.classActive); // Mark as Active
-                console.log('success');
+                $(this).removeClass(this.classActive);
+                $pr.addClass(this.classActive); // Mark as Active
             } else {
-                if (!pr.className==this.classActive) {
-                    this.removeAllClasses("p", this.classActive);
-                    pr.className+=this.classActive; // Mark as Active
+                if (!$pr.hasClass(this.classActive)) {
+                    $(this).removeClass(this.classActive);
+                    $pr.addClass(this.classActive); // Mark as Active
                 }
 
                 if (sp) {
-                    $('span').toggleClass(this.classHighlight);
+                    $(sp).toggleClass(this.classHighlight);
                     hasChanged = true;
                 }
             }
@@ -236,9 +234,9 @@ var Emphasis = {
             pr.innerHTML = txt;
             pr.setAttribute('data-sentences', jLen);
 
-            this.removeAllClasses("p", this.classActive);
-            pr.className=this.classActive; // Mark as Active
-            pr.className=this.classReady;  // Mark as Ready
+            $(this).removeClass(this.classActive);
+            $pr.addClass(this.classActive); // Mark as Active
+            $pr.addClass(this.classReady);  // Mark as Ready
             hasChanged = true;
         }
 
@@ -265,15 +263,15 @@ var Emphasis = {
             }
         } else {
             $('span.' + this.classInfo).remove(); //jQuery dependency
-            this.removeAllClasses(this.classActive);
+            $(this).removeClass(this.classActive);
         }
     },
 
     updateAnchor: function(an) {
     /*  Make this A tag the one and only Anchor */
         this.p = an.getAttribute("data-key");
-        this.removeAllClasses("a", this.classActiveAnchor);
-        an.addClassName(this.classActiveAnchor);
+        $(this).removeClass("a", this.classActiveAnchor);
+        $(an).addClass(this.classActiveAnchor);
     },
 
     updateURLHash: function() {
@@ -284,10 +282,10 @@ var Emphasis = {
 
         for (var p=0; p<pLen; p++) {
             var key = paras[p].getAttribute("data-key");
-            if (paras[p].className==this.classHighlight) {
+            if ($(paras[p]).hasClass(this.classHighlight)) {
                 h += "," + key; // Highlight full paragraph
             } else {
-                var spans = paras[p].select('span.' + this.classHighlight); //select is a problem
+                var spans = $('span.' + this.classHighlight, paras[p]); //select is a problem
                 var sLen  = spans.length;
                 var nSent = paras[p].getAttribute("data-sentences");
 
@@ -358,13 +356,9 @@ var Emphasis = {
         var pg = (isNaN(p)) ? this.findKey(p)['elm'] : (this.paragraphList().list[p-1] || false);
         var instance = this;
         if (pg) {
-            p = '"' + p + '"';
-            var datakey = "'p[data-key$=" + p + "]'";
-            console.log(datakey);
-            $(document).scrollTop($(datakey).offset().top);
-            //setTimeout(function(){
-                //pg.scrollTo(); //Prototype dependency
-            //}, 500);
+            setTimeout(function(){
+                $(window).scrollTop($(pg).offset().top);
+            }, 500);
         }
     },
 
@@ -401,7 +395,7 @@ var Emphasis = {
 
                 para.setAttribute("data-sentences", jLen);
                 para.innerHTML = lines.join('. ').replace(/__DOT__/g, ".").replace(/<\/span>\./g, ".<\/span>");
-                para.addClassName('emReady'); /* Mark the paragraph as having SPANs */
+                $(para).addClass('emReady'); /* Mark the paragraph as having SPANs */
             }
         }
     },
@@ -482,14 +476,14 @@ var Emphasis = {
         return n;
     },
 
-    removeAllClasses: function(tag, klass) {
-    /*  Remove classes */
+    /*removeAllClasses: function(tag, klass) {
+    //  Remove classes 
         if (!klass || !tag) return;
         var els = $((tag + "." + klass));
         for (var i=0; i<els.length; i++){
             els[i].removeClassName(klass);
         }
-    }
+    } */
 };
 
 $(document).ready(function(){ 
