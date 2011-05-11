@@ -1,10 +1,9 @@
 #Emphasis#
 
-This is my fork of the NYTimes.com's Emphasis library. Everything up to commit (SHA: 70b2073799d9970d217f4c9b7cf76ee4451f6ed8
-) is a clean jQuery port of the original, Prototype-dependent script. Commits after that are modifications for use with the Pandamian code base.
+This is my fork of the NYTimes.com's Emphasis library. Everything up to commit _ba55535_ is a clean jQuery port of the original, Prototype-dependent script. Commits after that are modifications for use with the Pandamian code base.
 
 
-##Original Notes##
+##Original Notes (from Michael Donohoe, NYTimes)##
 
 Emphasis provides dynamic paragraph-specific anchor links and the ability to highlight text in a document, all of which is made available in the URL hash so it can be emailed, bookmarked, or shared.
 
@@ -41,6 +40,8 @@ this.paraSelctors = $$('.articleBody p:not(p[class]):not(:empty)', '#articleBody
 ##Dependencies##
 Currently this requires that you use the PrototypeJS library - tested with version 1.6.
 
+emphasis-jq.js has a jQuery dependency. Currently tested with version 1.5.2.
+
 http://prototypejs.org/download
 
 ##Thanks##
@@ -48,9 +49,3 @@ http://prototypejs.org/download
 Levenshtein calculation in the script is based on some nice code by Andrew Hedges
 http://andrew.hedges.name/experiments/levenshtein/
 
-##To-Do##
-
- - Remove framework dependency (PrototypeJS)
- - Further work on UI for highlighting with focus on simplicity
- - Social
- - Support for touch-based devices
