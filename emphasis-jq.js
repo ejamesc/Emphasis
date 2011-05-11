@@ -68,7 +68,6 @@ var Emphasis = {
     /*  Inject the minimum styles rules required */
         var st = document.createElement('style');
         st.innerHTML = 'p.' + this.classActive + ' span { background-color:#f2f4f5; } p span.' + this.classHighlight + ' { background-color:#fff0b3; } span.' + this.classInfo + ' { position:absolute; margin:-1px 0px 0px -8px; padding:0; font-size:10px; background-color: transparent !important} span.' + this.classInfo + ' a { text-decoration: none; } a.' + this.classActiveAnchor + ' { color: #000; font-size: 11px; }';
-        console.log(st.innerHTML);
         document.getElementsByTagName("head")[0].appendChild(st);
     },
 
@@ -168,7 +167,7 @@ var Emphasis = {
                 pr.setAttribute("data-num", c); // Order
                 //Event.observe(pr, 'click', function(e) { instance.paragraphClick(e); }); 
                 // Prefer not doing this for each Paragraph but seems necessary
-                $('p').click(function(e) { instance.paragraphClick(e);});
+                $(pr).click(function(e) { instance.paragraphClick(e);});
                 c++;
             }
         }
@@ -180,7 +179,6 @@ var Emphasis = {
     paragraphClick: function(e) {
     /*  Clicking a Paragrsph has consequences for Highlighting, selecting and changing active Anchor */
         if (!this.vu) { return; }
-        console.log('success');
         var hasChanged = false;
         var pr = (e.currentTarget.nodeName=="P") ? e.currentTarget : false; // Paragraph
         var sp = (e.target.nodeName=="SPAN")     ? e.target        : false; // Span
@@ -190,7 +188,7 @@ var Emphasis = {
         
         if (an) {
         /*  Click an Anchor link */
-            if (!$('a').hasClass(this.classActiveAnchor)) {
+            if (!$(an).hasClass(this.classActiveAnchor)) {
                 this.updateAnchor(an);
                 hasChanged = true;
                 e.preventDefault();
@@ -365,16 +363,15 @@ var Emphasis = {
     goHighlight: function(h, s) {
     /*  Highlight a Paragraph, or specific Sentences within it */
         if (!h) return;
-        console.log('yay');
+        
         var hLen = h.length;
-                console.log(hLen);
 
         for (var i=0; i<hLen; i++) {
             var para = this.paragraphList().list[h[i]-1] || false;
-            console.log(para);
+
             if (para) {
                 var sntns = s[h[i].toString()] || false;
-                var multi = !sntns || sntns.length==0; // Individual sentences, or whole paragraphy?
+                var multi = !sntns || sntns.length==0; // Individual sentences, or whole paragraph?
                 var lines = this.getSentences(para);
                 var jLen  = lines.length;
 
